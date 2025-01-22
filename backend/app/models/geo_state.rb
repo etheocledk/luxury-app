@@ -1,0 +1,2 @@
+class GeoState < ApplicationRecord
+end
