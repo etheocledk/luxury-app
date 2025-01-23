@@ -11,7 +11,7 @@ class Users::SessionsController < Devise::SessionsController
         status: {
           code: 200,
           message: "Signed up successfully.",
-          data: current_user
+          data: current_user.as_json.merge(token: current_token)
         }
       }, status: :ok
     end
@@ -31,5 +31,9 @@ class Users::SessionsController < Devise::SessionsController
           message: "User has no active session."
         }, status: :unauthorized
     end
+  end
+
+  def current_token
+    request.env["warden-jwt_auth.token"]
   end
 end

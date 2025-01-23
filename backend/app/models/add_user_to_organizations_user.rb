@@ -1,0 +1,2 @@
+class AddUserToOrganizationsUser < ApplicationRecord
+end

@@ -2,20 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+*, ::after, ::before{
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto';
+  font-size: 16px;
+  line-height: 1.5;
+  z-index: 1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body{
+  background-color: white;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+a, a:active, a:visited{
+  text-decoration: none;
+  color: inherit;
+}
+
+button{
+  cursor: pointer;
+  border: none;
+}
+
+img{
+  max-width: 100%;
+  height: auto;
+}
+
+ul{
+  list-style: none;
+}
+
+.sans-serif {
+  font-family: 'Arial', sans-serif;
 }
