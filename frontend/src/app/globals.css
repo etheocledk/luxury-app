@@ -7,7 +7,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Roboto';
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   z-index: 1;
@@ -36,6 +36,6 @@ ul{
   list-style: none;
 }
 
-.sans-serif {
-  font-family: 'Arial', sans-serif;
+input{
+  outline: none;
 }
