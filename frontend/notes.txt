@@ -1,0 +1,48 @@
+useToast("Opération réussie !", "success");
+
+useToast("Erreur critique", "error", { autoClose: false });
+
+
+useToast("Message personnalisé", "info", {
+  autoClose: 3000,
+  position: "bottom-left",
+  hideProgressBar: true,
+});
+
+
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+
+export default function ConfirmationPage() {
+  const router = useRouter();
+  const { confirmation_token } = router.query;
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (confirmation_token) {
+      fetch('/users/confirmation', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ confirmation_token }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.message) {
+            setMessage(data.message);
+          } else {
+            setError(data.errors);
+          }
+        });
+    }
+  }, [confirmation_token]);
+
+  return (
+    <div>
+      {message && <p>{message}</p>}
+      {error && <p>{error}</p>}
+    </div>
+  );
+}

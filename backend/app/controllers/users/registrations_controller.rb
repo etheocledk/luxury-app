@@ -8,7 +8,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       render json: {
         status: {
           code: 200,
-          message: "Signed up successfully.",
+          message: "Signed up successfully. Confirm your mail.",
           data: {
             id: resource.id,
             email: resource.email,
