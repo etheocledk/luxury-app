@@ -1,4 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  before_action :configure_sign_up_params, only: [ :create ]
   respond_to :json
 
   private
@@ -12,6 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           data: {
             id: resource.id,
             email: resource.email,
+            role: resource.role,
             created_at: resource.created_at,
             updated_at: resource.updated_at
           }
@@ -27,4 +29,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
       }, status: :unprocessable_entity
     end
   end
+
+    protected
+    def configure_sign_up_params
+        devise_parameter_sanitizer.permit(:sign_up, keys: [ :email, :password, :password_confirmation, :role_id ])
+    end
 end
