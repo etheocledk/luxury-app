@@ -5,7 +5,7 @@ export default function Places() {
         <div className="pt-8">
             <div className="flex justify-between items-center mb-1 px-8">
                 <h2 className="font-bold text-xl">Places</h2>
-                <Link href="/dashboard/places/editdd" className="px-2 py-1 border border-gray rounded-[5px] hover:bg-black hover:text-white">New place</Link>
+                <Link href="/dashboard/places/add" className="px-2 py-1 border border-gray rounded-[5px] hover:bg-black hover:text-white">New place</Link>
             </div>
             <hr className="my-3" />
             <div className="px-8 mt-8">

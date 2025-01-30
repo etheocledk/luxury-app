@@ -4,4 +4,9 @@ class Place < ApplicationRecord
 
   has_many :listings
   has_many :images, as: :subject
+
+  def default_image
+    image = images.order(sort: :asc).first
+    image ? image.image_url : nil
+  end
 end

@@ -14,12 +14,12 @@ export default function Home() {
   const { del } = useHttpClient();
   const showToast = useToast();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     router.push("/login");
+  //   }
+  // }, [router]);
 
   const handleLogout = async () => {
 
@@ -57,19 +57,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="container mx-auto py-4 px-4 md:px-36 flex justify-between items-center">
-        <div>
-          <Image
-            src="/images/logo.png"
-            alt="Logo"
-            className="cursor-pointer w-48"
-            width={500}
-            height={500}
-          />
-        </div>
-        <button onClick={confirmLogout} className="bg-red-500 px-5 py-2 rounded-[5px] text-white hover:bg-red-600">Logout</button>
-      </div>
-      <hr />
+      
       <div className="container mx-auto py-4 px-4 md:px-36">
         <h2 className="text-[25px] md:text-[50px] font-[600] mt-10">Discover and Explore <br /> Australia’s Best Accommodation</h2>
 

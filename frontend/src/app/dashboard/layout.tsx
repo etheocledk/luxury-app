@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: DashboardLayout) {
                     </Link>
                 </div>
             </div>
-            <div className="w-full" style={{ width: 'calc(100% - 13rem)' }}>{children}</div>
+            <div className="w-full h-screen overflow-y-scroll" style={{ width: 'calc(100% - 13rem)' }}>{children}</div>
         </div>
     );
 }

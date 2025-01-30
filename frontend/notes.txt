@@ -1,48 +1,31 @@
-useToast("Opération réussie !", "success");
+const handleFileUpload = async (e) => {
+  const formData = new FormData();
+  formData.append("file", e.target.files[0]);
+  formData.append("image[organization_id]", "1"); // Remplace par l'ID de l'organisation
+  formData.append("image[subject_id]", "123"); // Remplace par l'ID du listing
+  formData.append("image[subject_type]", "Listing"); // Remplace par le type du subject
+  formData.append("image[sort]", "1"); // Si nécessaire, ajoute un paramètre de tri
 
-useToast("Erreur critique", "error", { autoClose: false });
+  const response = await fetch('/api/images', {
+    method: 'POST',
+    body: formData,
+  });
 
+  const data = await response.json();
+  if (response.ok) {
+    console.log('Image uploaded successfully', data);
+  } else {
+    console.error('Failed to upload image', data);
+  }
+};
 
-useToast("Message personnalisé", "info", {
-  autoClose: 3000,
-  position: "bottom-left",
-  hideProgressBar: true,
-});
-
-
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-
-export default function ConfirmationPage() {
-  const router = useRouter();
-  const { confirmation_token } = router.query;
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (confirmation_token) {
-      fetch('/users/confirmation', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ confirmation_token }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.message) {
-            setMessage(data.message);
-          } else {
-            setError(data.errors);
-          }
-        });
-    }
-  }, [confirmation_token]);
-
-  return (
-    <div>
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
-    </div>
-  );
-}
+return (
+  <div>
+    <h1>Upload une image</h1>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleFileUpload}
+    />
+  </div>
+);
