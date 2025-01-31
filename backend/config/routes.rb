@@ -7,10 +7,9 @@ Rails.application.routes.draw do
   }
 
   get "home", to: "home#index"
+  get "search", to: "home#search"
 
   resources :places
   resources :listings
   resources :images, only: [ :create ]
-
-  # GET /home?query=laptop
 end

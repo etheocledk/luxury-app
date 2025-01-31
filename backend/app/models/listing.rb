@@ -1,11 +1,10 @@
 class Listing < ApplicationRecord
   include PgSearch::Model
 
-  pg_search_scope :search_by_title_and_description,
-                  against: [ :title, :description ],
-                  using: {
-                    tsearch: { prefix: true }
-                  }
+  pg_search_scope :search_listings,
+                  against: { title: "A", description: "B" },
+                  using: { tsearch: { dictionary: "english" } }
+
   belongs_to :organization
   belongs_to :place
 

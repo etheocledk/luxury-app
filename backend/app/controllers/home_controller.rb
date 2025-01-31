@@ -1,33 +1,40 @@
 class HomeController < ApplicationController
   def index
-    # Appliquer des filtres de recherche basés sur les paramètres
     listings = Listing.all
 
-    # Filtrage par mot-clé de recherche, si le paramètre 'query' est présent
-    if params[:query].present?
-      listings = listings.search_by_title_and_description(params[:query])
-    end
-
-    # Ajouter d'autres filtres ici si nécessaire, par exemple :
-    # Filtrage par catégorie
-    # if params[:category].present?
-    #   listings = listings.where(category: params[:category])
-    # end
-
-    # Trier les listings par date de mise à jour
     listings = listings.order(updated_at: :desc)
 
-    # Limiter les résultats à 6, avec un paramètre de pagination
     listings = listings.limit(6)
 
-    # Inclure l'image par défaut pour chaque listing
     listings_with_images = listings.map do |listing|
       listing.as_json.merge({
-        default_image_url: listing.default_image&.image_url # Retourne l'image par défaut
+        default_image_url: listing.default_image&.image_url
       })
     end
 
-    # Retourner la réponse JSON
     render json: listings_with_images
+  end
+
+  def search
+    query = params[:query]
+
+    listings = Listing.search_listings(query)
+
+    places = Place.search_places(query)
+
+    results = listings + places
+
+    results_with_images = results.map do |result|
+      if result.is_a?(Listing)
+        result.as_json.merge({
+          default_image_url: result.default_image&.image_url
+        })
+      elsif result.is_a?(Place)
+        result.as_json.merge({
+          default_image_url: result.default_image&.image_url
+        })
+      end
+    end
+    render json: results_with_images
   end
 end

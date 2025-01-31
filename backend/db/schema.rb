@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_30_143143) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_31_055432) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,8 +82,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_30_143143) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.virtual "searchable", type: :tsvector, as: "(setweight(to_tsvector('english'::regconfig, (COALESCE(title, ''::character varying))::text), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::\"char\"))", stored: true
     t.index ["organization_id"], name: "index_listings_on_organization_id"
     t.index ["place_id"], name: "index_listings_on_place_id"
+    t.index ["searchable"], name: "index_listings_on_searchable", using: :gin
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -118,8 +120,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_30_143143) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.virtual "searchable", type: :tsvector, as: "(setweight(to_tsvector('english'::regconfig, (COALESCE(title, ''::character varying))::text), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::\"char\"))", stored: true
     t.index ["geo_region_id"], name: "index_places_on_geo_region_id"
     t.index ["place_type_id"], name: "index_places_on_place_type_id"
+    t.index ["searchable"], name: "index_places_on_searchable", using: :gin
   end
 
   create_table "roles", force: :cascade do |t|
