@@ -4,7 +4,7 @@ class ListingPolicy < ApplicationPolicy
   end
 
   def manage?
-    admin? || @user.organizations.include?(@record.organization)
+    @user.admin? || @user.organizations.include?(@record.organization)
   end
 
   def new?

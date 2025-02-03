@@ -12,6 +12,10 @@ class User < ApplicationRecord
 
   before_create :assign_default_role
 
+
+  has_many :organizations_users
+  has_many :organizations, through: :organizations_users
+
   belongs_to :role
 
   def admin?
@@ -26,10 +30,6 @@ class User < ApplicationRecord
     @role_key ||= self.role.key
   end
 
-  has_many :organizations_users
-  has_many :organizations, through: :organizations_users
-
-  belongs_to :role
 
   private
 

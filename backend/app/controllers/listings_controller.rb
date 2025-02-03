@@ -6,40 +6,54 @@ class ListingsController < ApplicationController
   def index
     listings = policy_scope(Listing)
 
-    # Inclure la première image de chaque listing
     listings_with_images = listings.map do |listing|
       listing.as_json.merge({
-        default_image_url: listing.default_image&.image_url # Retourner l'image par défaut (première image)
+        # default_image_url: listing.default_image&.file.attached? ? listing.default_image.image_url : nil,
+        organization: listing.organization.as_json(only: [ :id, :title ]),
+        place: listing.place.as_json(only: [ :id, :title, :description ])
+        # images: listing.images.map { |image| image.file.attached? ? image.image_url : nil }
       })
     end
 
     render json: listings_with_images
   end
 
+
   # GET /listings/:id
   def show
     authorize @listing
 
-    # Inclure toutes les images triées par 'sort' et la première image (par défaut)
     render json: @listing.as_json.merge({
-      default_image_url: @listing.default_image&.image_url,
-      images: @listing.images.order(sort: :asc).map { |image| image.image_url } # Retourner toutes les images associées
+      # default_image_url: @listing.default_image&.file.attached? ? @listing.default_image.image_url : nil,
+      organization: @listing.organization.as_json(only: [ :id, :title ]),
+      place: @listing.place.as_json(only: [ :id, :title ])
+      # images: @listing.images.order(sort: :asc).map { |image| image.file.attached? ? image.image_url : nil }
     })
   end
+
 
   # POST /listings
   def create
     @listing = Listing.new(listing_params)
-    @listing.organization_id = current_user.organization.id if current_user.organization
+
+    if current_user.organizations.any? && params[:organization_id].present?
+      @listing.organization_id = params[:organization_id]
+    elsif current_user.organizations.any?
+      @listing.organization_id = current_user.organizations.first.id
+    else
+      @listing.organization_id = nil
+    end
 
     authorize @listing
-
     if @listing.save
       render json: @listing, status: :created
     else
       render json: @listing.errors, status: :unprocessable_entity
     end
   end
+
+
+
 
   # PATCH/PUT /listings/:id
   def update
@@ -61,12 +75,10 @@ class ListingsController < ApplicationController
 
   private
 
-  # Set the listing for show, update, and destroy actions
   def set_listing
     @listing = Listing.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through
   def listing_params
     params.require(:listing).permit(:title, :description, :place_id, :organization_id)
   end

@@ -7,12 +7,14 @@ import useToast from "@/app/api/toast";
 import { ToastContainer } from 'react-toastify';
 import { useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-export default function AddPlace() {
-    const [images, setImages] = useState<string[]>([]);
-    const { post, get } = useHttpClient();
+export default function EditPlace() {
+    const { id } = useParams();
+    const { get, put } = useHttpClient();
     const showToast = useToast();
     const router = useRouter();
+    const [image, setImage] = useState<string | null>(null);
 
     const [geo_region_id, setGeoRegion] = useState("");
     const [place_type_id, setPlaceType] = useState("");
@@ -23,49 +25,25 @@ export default function AddPlace() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleImageChange = (e: any) => {
-        const files = e.target.files;
-        const newImages = Array.from(files).map((file: any) => URL.createObjectURL(file));
-        setImages((prevImages) => [...prevImages, ...newImages]);
+        const file = e.target.files[0];
+        if (file) {
+            setImage(URL.createObjectURL(file));
+        }
     };
-
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        setIsSubmitting(true);
-        if (!String(geo_region_id).trim() || !String(place_type_id).trim() || !title.trim() || !description.trim()) {
-            showToast("Veuillez remplir tous les champs.", "error");
-            setIsSubmitting(false);
-            return;
-        }
-        const { data, error }: { data?: any, error?: any } = await post(endpoints.places(), {
-            geo_region_id,
-            place_type_id,
-            title,
-            description
-        });
-
-        if (data) {
-            setIsSubmitting(false);
-            showToast("Place ajouté avec succès !", "success");
-            setGeoRegion("");
-            setPlaceType("");
-            setTitle("");
-            setDescription("");
-        } else {
-            setIsSubmitting(false);
-            if (error) {
-                showToast(error, "error");
-            } else {
-                showToast("Une erreur est survenue. Veuillez réessayer.", "error");
-            }
-        }
-    }
 
     interface TypeGeoRegionAndPlace {
         id: string;
         title: string;
         key: string;
+    }
+
+    interface Place {
+        id: string;
+        geo_region_id: string;
+        place_type_id: string;
+        title: string;
+        description: string;
+        default_image_url: string;
     }
 
     const getGeoRegions = async () => {
@@ -86,6 +64,44 @@ export default function AddPlace() {
         }
     };
 
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        if (!String(geo_region_id).trim() || !String(place_type_id).trim() || !title.trim() || !description.trim()) {
+            showToast("Veuillez remplir tous les champs.", "error");
+            setIsSubmitting(false);
+            return;
+        }
+        const { data, error }: { data?: any, error?: any } = await put(endpoints.place(id), {
+            geo_region_id,
+            place_type_id,
+            title,
+            description
+        });
+
+        if (data) {
+            setIsSubmitting(false);
+            showToast("Place mise à jour avec succès !", "success");
+        } else {
+            setIsSubmitting(false);
+            if (error) {
+                showToast(error, "error");
+            } else {
+                showToast("Une erreur est survenue. Veuillez réessayer.", "error");
+            }
+        }
+    }
+
+    const getSinglePlace = async () => {
+        const { data }: { data: Place | null } = await get(endpoints.place(id));
+        if (data) {
+            setGeoRegion(data.geo_region_id);
+            setPlaceType(data.place_type_id);
+            setTitle(data.title);
+            setDescription(data.description);
+        }
+    }
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -94,12 +110,14 @@ export default function AddPlace() {
 
         getGeoRegions();
         getPlaceTypes();
+        getSinglePlace();
     }, [router]);
+
 
     return (
         <div className="py-8">
             <div className="flex justify-between items-center mb-1 px-8">
-                <h2 className="font-bold text-xl">New Place</h2>
+                <h2 className="font-bold text-xl">Edit Place</h2>
                 <Link href="/dashboard/places" className="px-2 py-1 border border-gray rounded-[5px] hover:bg-black hover:text-white">Back</Link>
             </div>
             <hr className="my-3" />
@@ -192,7 +210,7 @@ export default function AddPlace() {
                                 width: '60%',
                             }}
                         >
-                            Upload Files
+                            Upload File
                         </label>
 
                         <input
@@ -201,19 +219,9 @@ export default function AddPlace() {
                             accept="image/*"
                             onChange={handleImageChange}
                             style={{ display: 'none' }}
-                            multiple
                         />
 
-                        <div className="mt-4 flex flex-wrap gap-4 w-[60%]">
-                            {images.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={image}
-                                    alt={`Preview ${index}`}
-                                    style={{ width: '115px', height: '115px', borderRadius: '10px' }}
-                                />
-                            ))}
-                        </div>
+                        {image && <img src={image} alt="Image prévisualisée" style={{ marginTop: 20, width: '100px', height: '100px', borderRadius: "10px" }} />}
                     </div>
 
                     <div className="flex justify-start">

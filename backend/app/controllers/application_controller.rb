@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::API
   include Pundit::Authorization
 
-  before_action :authenticate_user, except: [ :create ]
+  # before_action :authenticate_user, except: [ :create, :new, :confirmation, :request_password_reset, :reset_password ]
 
   def pundit_user
     current_user

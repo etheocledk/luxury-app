@@ -3,6 +3,14 @@ class PlacePolicy < ApplicationPolicy
     @user
   end
 
+  def create?
+    @user
+  end
+
+  def update?
+    @user
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if user.admin?

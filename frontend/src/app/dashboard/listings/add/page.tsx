@@ -1,16 +1,103 @@
 "use client";
-
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import useHttpClient from "@/app/api/httpClient";
+import endpoints from "@/app/api/endpoints";
+import useToast from "@/app/api/toast";
+import { ToastContainer } from 'react-toastify';
+import { useEffect } from "react";
 import Link from "next/link";
-import { useState } from 'react';
+
 export default function AddListing() {
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string | null>(null);  // Utilisation d'une seule image
 
     const handleImageChange = (e: any) => {
-        const file = e.target.files[0];
+        const file = e.target.files[0];  // Récupère la première image sélectionnée
         if (file) {
-            setImage(URL.createObjectURL(file));
+            const imageUrl = URL.createObjectURL(file);
+            setImage(imageUrl);  // Met à jour l'état avec l'URL de l'image
         }
     };
+
+    const { post, get } = useHttpClient();
+    const showToast = useToast();
+    const router = useRouter();
+
+    const [place_id, setPlace] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [places, setPlaces] = useState<TypeGeoRegionAndPlace[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        if (!String(place_id).trim() || !title.trim() || !description.trim()) {
+            showToast("Veuillez remplir tous les champs.", "error");
+            setIsSubmitting(false);
+            return;
+        }
+
+        const { data, error }: { data?: any, error?: any } = await post(endpoints.listings(), {
+            place_id,
+            title,
+            description
+        });
+
+        if (data) {
+            const imageFile = e.target.querySelector('input[type="file"]').files[0];
+            
+            if (imageFile) {
+                const formData = new FormData();
+                formData.append("image[file]", imageFile); 
+                formData.append("image[subject_id]", data.id);
+                formData.append("image[subject_type]", "Listing"); 
+                formData.append("image[organization_id]", data.organization_id);
+                await post(endpoints.images(), formData);
+                // if (response.error) {
+                //     // showToast("Erreur lors de l'upload de l'image", "error");
+                //     // return;
+                //     console.error("Error uploading image:", response.error);
+                // }
+            }
+
+            setIsSubmitting(false);
+            showToast("Listing ajouté avec succès !", "success");
+            setPlace("");
+            setTitle("");
+            setDescription("");
+            setImage(null);
+        } else {
+            setIsSubmitting(false);
+            if (error) {
+                showToast(error, "error");
+            } else {
+                showToast("Une erreur est survenue. Veuillez réessayer.", "error");
+            }
+        }
+    };
+
+    interface TypeGeoRegionAndPlace {
+        id: string;
+        title: string;
+        key: string;
+    }
+
+    const getPlaces = async () => {
+        const { data }: { data: TypeGeoRegionAndPlace[] | null } = await get(endpoints.places());
+        if (data && Array.isArray(data)) {
+            setPlaces(data);
+        }
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+        }
+        getPlaces();
+    }, [router]);
 
     return (
         <div className="py-8">
@@ -20,7 +107,7 @@ export default function AddListing() {
             </div>
             <hr className="my-3" />
             <div className="px-8 mt-8">
-                <form action="">
+                <form onSubmit={handleSubmit}>
                     <div className="mb-5">
                         <label htmlFor="region" className="block text-sm font-semibold">
                             LOCATION
@@ -30,9 +117,13 @@ export default function AddListing() {
                             className="w-[60%] mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                             id="region"
                             name="region"
-                            required
+                            value={place_id}
+                            onChange={(e) => setPlace(e.target.value)}
                         >
                             <option value="">Please select...</option>
+                            {places.map((place) => (
+                                <option key={place.id} value={place.id}>{place.title}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -45,8 +136,9 @@ export default function AddListing() {
                             type="text"
                             id="title"
                             name="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             placeholder="Enter the title"
-                            required
                         />
                     </div>
 
@@ -58,8 +150,9 @@ export default function AddListing() {
                             className="w-[60%] mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                             id="description"
                             name="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             placeholder="Enter the description"
-                            required
                         />
                     </div>
 
@@ -90,18 +183,32 @@ export default function AddListing() {
                             style={{ display: 'none' }}
                         />
 
-                        {image && <img src={image} alt="Image prévisualisée" style={{ marginTop: 20, width: '100px', height: '100px', borderRadius: "10px" }} />}
+                        {image && (
+                            <div className="mt-4">
+                                <img
+                                    src={image}
+                                    alt="Image Preview"
+                                    style={{ width: '115px', height: '115px', borderRadius: '10px' }}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex justify-start">
                         <button
                             type="submit"
-                            className="px-2 py-1 border border-gray  rounded-[5px] hover:bg-black hover:text-white">
-                            Save Listing
+                            className={`px-2 py-1 border border-gray rounded-[5px] ${isSubmitting
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : " hover:bg-black hover:text-white"
+                                }`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Saving..." : "Save Listing"}
                         </button>
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 }

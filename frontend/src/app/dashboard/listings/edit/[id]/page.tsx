@@ -1,9 +1,20 @@
 "use client";
-
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import useHttpClient from "@/app/api/httpClient";
+import endpoints from "@/app/api/endpoints";
+import useToast from "@/app/api/toast";
+import { ToastContainer } from 'react-toastify';
+import { useEffect } from "react";
 import Link from "next/link";
-import { useState } from 'react';
+import { useParams } from "next/navigation";
 
 export default function EditListing() {
+    const { id } = useParams();
+    const { get, put } = useHttpClient();
+    const showToast = useToast();
+    const router = useRouter();
     const [image, setImage] = useState<string | null>(null);
 
     const handleImageChange = (e: any) => {
@@ -13,6 +24,81 @@ export default function EditListing() {
         }
     };
 
+    const [place_id, setPlace] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [places, setPlaces] = useState<TypeGeoRegionAndPlace[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        setIsSubmitting(true);
+        if (!String(place_id).trim() || !title.trim() || !description.trim()) {
+            showToast("Veuillez remplir tous les champs.", "error");
+            setIsSubmitting(false);
+            return;
+        }
+        const { data, error }: { data?: any, error?: any } = await put(endpoints.listing(id), {
+            place_id,
+            title,
+            description
+        });
+
+        if (data) {
+            setIsSubmitting(false);
+            showToast("Listing mise à jour avec succès !", "success");
+        } else {
+            setIsSubmitting(false);
+            if (error) {
+                showToast(error, "error");
+            } else {
+                showToast("Une erreur est survenue. Veuillez réessayer.", "error");
+            }
+        }
+    }
+
+    interface TypeGeoRegionAndPlace {
+        id: string;
+        title: string;
+        key: string;
+    }
+
+    interface Listing {
+        place_id: string;
+        title: string;
+        description: string;
+    }
+
+    const getPlaces = async () => {
+        const { data }: { data: TypeGeoRegionAndPlace[] | null } = await get(endpoints.places());
+        if (data && Array.isArray(data)) {
+            if (Array.isArray(data)) {
+                setPlaces(data);
+            }
+        }
+    };
+
+    const getSingleListing = async () => {
+        const { data }: { data: Listing | null } = await get(endpoints.listing(id));
+        if (data) {
+            setPlace(data.place_id);
+            setTitle(data.title);
+            setDescription(data.description);
+        }
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+        }
+
+        getPlaces();
+        getSingleListing();
+    }, [router]);
+
     return (
         <div className="py-8">
             <div className="flex justify-between items-center mb-1 px-8">
@@ -21,7 +107,7 @@ export default function EditListing() {
             </div>
             <hr className="my-3" />
             <div className="px-8 mt-8">
-                <form action="">
+                <form onSubmit={handleSubmit}>
                     <div className="mb-5">
                         <label htmlFor="region" className="block text-sm font-semibold">
                             LOCATION
@@ -31,9 +117,13 @@ export default function EditListing() {
                             className="w-[60%] mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                             id="region"
                             name="region"
-                            required
+                            value={place_id}
+                            onChange={(e) => setPlace(e.target.value)}
                         >
                             <option value="">Please select...</option>
+                            {places.map((place) => (
+                                <option key={place.id} value={place.id}>{place.title}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -46,8 +136,9 @@ export default function EditListing() {
                             type="text"
                             id="title"
                             name="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             placeholder="Enter the title"
-                            required
                         />
                     </div>
 
@@ -59,8 +150,9 @@ export default function EditListing() {
                             className="w-[60%] mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                             id="description"
                             name="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             placeholder="Enter the description"
-                            required
                         />
                     </div>
 
@@ -97,12 +189,18 @@ export default function EditListing() {
                     <div className="flex justify-start">
                         <button
                             type="submit"
-                            className="px-2 py-1 border border-gray  rounded-[5px] hover:bg-black hover:text-white">
-                            Save Listing
+                            className={`px-2 py-1 border border-gray  rounded-[5px] ${isSubmitting
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : " hover:bg-black hover:text-white"
+                                }`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Save Listing..." : "Save Listing"}
                         </button>
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 }

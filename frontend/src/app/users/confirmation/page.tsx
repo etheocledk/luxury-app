@@ -10,23 +10,27 @@ export default function ConfirmationPage() {
   const confirmation_token = searchParams?.get('confirmation_token');
 
   const [status, setStatus] = useState('Validation en cours...');
+  const [attempts, setAttempts] = useState(0);  
   const { get } = useHttpClient();
 
   useEffect(() => {
     let isRequestSent = false;
 
     const confirmEmail = async () => {
-      if (isRequestSent) return; 
+      if (isRequestSent || attempts >= 5) return;  
       isRequestSent = true;
 
+      setAttempts((prevAttempts) => prevAttempts + 1); 
+
       const { data, error }: { data?: any; error?: any } = await get(endpoints.confirmation(confirmation_token));
+
       if (data) {
         setStatus('Email confirmé avec succès ! Vous serez redirigé vers la page de connexion...');
         setTimeout(() => {
           router.push('/login');
         }, 5000);
       } else {
-        setStatus('Erreur lors de la validation : ' + error.errors[0]);
+        setStatus('Validation échouée après plusieurs tentatives. Actualisez la page pour réessayer.');
       }
     };
 
@@ -35,7 +39,7 @@ export default function ConfirmationPage() {
     return () => {
       isRequestSent = false;
     };
-  }, [confirmation_token, get, router]);
+  }, [confirmation_token, attempts, get, router]);
 
   return <div className="h-screen w-full flex justify-center items-center">{status}</div>;
 }

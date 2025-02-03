@@ -4,9 +4,9 @@ class Listing < ApplicationRecord
   pg_search_scope :search_listings,
                   against: { title: "A", description: "B" },
                   using: { tsearch: { dictionary: "english" } }
-
-  belongs_to :organization
   belongs_to :place
+
+  belongs_to :organization, optional: true
 
   has_many :images, as: :subject
 
