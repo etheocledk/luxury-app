@@ -8,7 +8,7 @@ class PlacesController < ApplicationController
 
     places_with_images = places.map do |place|
       place.as_json.merge({
-        images: place.images.map { |image| image.image_url },
+        default_image_url: place.default_image,
         geo_region: place.geo_region.as_json(only: [ :id, :title, :key ]), 
         place_type: place.place_type.as_json(only: [ :id, :title, :key ])  
       })
@@ -22,9 +22,10 @@ class PlacesController < ApplicationController
     authorize @place
 
     render json: @place.as_json.merge({
-      images: @place.images.map { |image| image.image_url },
+      default_image_url: @place.default_image,
       geo_region: @place.geo_region.as_json(only: [ :id, :name ]),
-      place_type: @place.place_type.as_json(only: [ :id, :title ])
+      place_type: @place.place_type.as_json(only: [ :id, :title ]),
+      images: @place.images.order(sort: :asc).map { |image| image.file.attached? ? image.image_url : nil }
     })
   end
 

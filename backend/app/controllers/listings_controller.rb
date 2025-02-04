@@ -11,7 +11,6 @@ class ListingsController < ApplicationController
         default_image_url: listing.default_image,
         organization: listing.organization.as_json(only: [ :id, :title ]),
         place: listing.place.as_json(only: [ :id, :title, :description ])
-        # images: listing.images.map { |image| image.file.attached? ? image.image_url : nil }
       })
     end
 

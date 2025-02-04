@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import useHttpClient from "@/app/api/httpClient";
 import endpoints from "@/app/api/endpoints";
 import { ToastContainer } from "react-toastify";
+import baseUrl from "@/app/api/baseUrl";
 
 export default function Places() {
   const router = useRouter();
@@ -76,10 +77,7 @@ export default function Places() {
                 <div className="flex space-x-2">
                   <div>
                     <Image
-                      src={
-                        place.default_image_url ||
-                        "https://dummyimage.com/300x300"
-                      }
+                      src={place.default_image_url ? baseUrl + place.default_image_url : "https://dummyimage.com/300x300"}
                       alt={place.title}
                       width={300}
                       height={300}
