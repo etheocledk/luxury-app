@@ -35,6 +35,7 @@ export default function Login() {
     if (data) {
       setIsSubmitting(false);
       localStorage.setItem("token", data.status.data.token);
+      localStorage.setItem("organization_id", data.status.data.organizations[0].id);
       showToast("Connexion effectuée avec succès !", "success");
       setEmail("");
       setPassword("");

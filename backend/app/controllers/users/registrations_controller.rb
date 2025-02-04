@@ -6,6 +6,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _options = {})
     if resource.persisted?
+      random_organization_id = Organization.order("RANDOM()").pluck(:id).first;
+      OrganizationsUser.create(organization_id: random_organization_id, user_id: resource.id);
       render json: {
         status: {
           code: 200,

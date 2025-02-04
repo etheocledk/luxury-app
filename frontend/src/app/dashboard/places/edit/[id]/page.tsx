@@ -103,7 +103,8 @@ export default function EditPlace() {
         formData.append("image[file]", imageFile);
         formData.append("image[subject_id]", data.id);
         formData.append("image[subject_type]", "Place");
-        formData.append("image[organization_id]", "");
+        const organizationId = localStorage.getItem("organization_id") || "";
+        formData.append("image[organization_id]", organizationId);
         await post(endpoints.images(), formData);
       }
       setIsSubmitting(false);

@@ -36,7 +36,7 @@ export default function Register() {
       return;
     }
 
-    const { data, error }: { data?: any, error?: any } = await post(endpoints.register(), { user: { email, password, password_confirmation: confirmPassword, role_id:2 } });
+    const { data, error }: { data?: any, error?: any } = await post(endpoints.register(), { user: { email, password, password_confirmation: confirmPassword, role_id:1} });
     if (data) {
       setIsSubmitting(false);
       setEmail("");

@@ -11,7 +11,7 @@ class Users::SessionsController < Devise::SessionsController
         status: {
           code: 200,
           message: "Signed up successfully.",
-          data: current_user.as_json.merge(token: current_token)
+          data: current_user.as_json.merge(token: current_token, organizations: current_user.organizations)
         }
       }, status: :ok
     end
