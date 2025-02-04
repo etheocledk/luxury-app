@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useHttpClient from "@/app/api/httpClient";
 import useToast from "@/app/api/toast";
 import endpoints from "@/app/api/endpoints";
+import { ToastContainer } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function ResetPassword() {
 
@@ -103,6 +105,7 @@ export default function ResetPassword() {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

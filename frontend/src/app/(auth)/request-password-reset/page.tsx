@@ -5,6 +5,7 @@ import useHttpClient from "@/app/api/httpClient";
 import endpoints from "@/app/api/endpoints";
 import useToast from "@/app/api/toast";
 import { useRouter } from "next/navigation";
+import { ToastContainer } from 'react-toastify';
 
 export default function RequestPasswordReset() {
   const [email, setEmail] = useState("");
@@ -27,18 +28,14 @@ export default function RequestPasswordReset() {
       user: { email },
     });
 
-    if (data) {
+    if (!error) {
       setIsSubmitting(false);
       showToast(
         "Un email de réinitialisation a été envoyé. Vérifiez votre boîte de réception.", "success"
       );
     } else {
       setIsSubmitting(false);
-      if (error) {
-        showToast(error, "error");
-      } else {
-        showToast("Une erreur est survenue. Veuillez réessayer.", "error");
-      }
+      showToast("Une erreur est survenue. Veuillez réessayer.", "error");
     }
   };
 
@@ -79,6 +76,7 @@ export default function RequestPasswordReset() {
           </a>
         </p>
       </div>
+      <ToastContainer />
     </div>
   );
 }

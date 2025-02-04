@@ -20,15 +20,15 @@ const useHttpClient = (
 ) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const token = localStorage.getItem("token");
-
-  // if (token) {
+ 
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
     config.headers = {
       ...config.headers,
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     };
-  // }
-
+  }
+  
   const request = async <T>(
     url: string,
     method: Method = "GET",

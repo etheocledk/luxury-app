@@ -11,7 +11,7 @@ place_types = [
 
 
 place_types.each do |place_type|
-  GeoRegion.find_or_create_by(key: place_type[:key]) do |r|
+  PlaceType.find_or_create_by(key: place_type[:key]) do |r|
     r.title = place_type[:title]
   end
 end

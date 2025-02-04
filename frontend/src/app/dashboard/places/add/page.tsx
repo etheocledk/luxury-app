@@ -7,6 +7,7 @@ import useToast from "@/app/api/toast";
 import { ToastContainer } from 'react-toastify';
 import { useEffect } from "react";
 import Link from "next/link";
+import toast from "react-toastify";
 
 export default function AddPlace() {
     const [images, setImages] = useState<string[]>([]);

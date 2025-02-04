@@ -1,0 +1,18 @@
+current directory: /home/etheocledk/Bureau/Bamana/luxury-app/backend/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.2/ext/stringio
+/home/etheocledk/.rvm/rubies/ruby-3.3.6/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/etheocledk/Bureau/Bamana/luxury-app/backend/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.2/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250204-236215-jv6cza sitelibdir\=./.gem.20250204-236215-jv6cza clean
+
+current directory: /home/etheocledk/Bureau/Bamana/luxury-app/backend/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.2/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250204-236215-jv6cza sitelibdir\=./.gem.20250204-236215-jv6cza
+compiling stringio.c
+linking shared-object stringio.so
+
+current directory: /home/etheocledk/Bureau/Bamana/luxury-app/backend/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.2/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250204-236215-jv6cza sitelibdir\=./.gem.20250204-236215-jv6cza install
+/usr/bin/install -c -m 0755 stringio.so ./.gem.20250204-236215-jv6cza
+
+current directory: /home/etheocledk/Bureau/Bamana/luxury-app/backend/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.2/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250204-236215-jv6cza sitelibdir\=./.gem.20250204-236215-jv6cza clean
