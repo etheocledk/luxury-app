@@ -6,8 +6,8 @@ import useHttpClient from "@/app/api/httpClient";
 import endpoints from "@/app/api/endpoints";
 import useToast from "@/app/api/toast";
 import { ToastContainer } from "react-toastify";
-import { toast } from "react-toastify";
-import { FaTimes } from 'react-icons/fa'; 
+import Link from "next/link";
+import baseUrl from "../api/baseUrl";
 
 export default function Listing() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function Listing() {
   }
 
   const [listings, setListings] = useState<Listing[]>([]);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -52,6 +53,19 @@ export default function Listing() {
     }
   };
 
+  const search = async() => {
+    const { data }: { data: Listing[] | null } = await get(
+      endpoints.search_listings(query)
+    );
+
+    
+    if (data && Array.isArray(data)) {
+      if (Array.isArray(data)) {
+        setListings(data);
+      }
+    }
+  };
+
   return (
     <div>
       <div className="container mx-auto py-4 px-4 md:px-36">
@@ -62,11 +76,13 @@ export default function Listing() {
         <div className="mt-6 bg-white shadow-md p-2 rounded-[5px] relative">
           <input
             type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Try searching for a beach e.g. Narrabeen"
             className="pl-5 rounded-[5px] border border-transparent h-12 outline-none w-[100%]"
           />
           <div className="bg-black h-10 rounded-[8px] absolute top-[12px] right-[10px] flex justify-center items-center">
-            <button className="text-white w-[100%] rounded-[5px] px-2 font-md">
+            <button onClick={search} className="text-white w-[100%] rounded-[5px] px-2 font-md">
               Search
             </button>
           </div>
@@ -92,18 +108,15 @@ export default function Listing() {
         ) : (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
             {listings.map((listing) => (
-              <div key={listing.id}>
+              <div key={listing.id} className="flex flex-col">
                 <Image
-                  src={
-                    listing.default_image_url ||
-                    "https://dummyimage.com/300x300"
-                  }
+                  src={listing.default_image_url ? baseUrl + listing.default_image_url : "https://dummyimage.com/300x300"}
                   alt={listing.title}
                   width={300}
                   height={300}
                   className="rounded-[12px] w-full h-[250px] object-cover"
                 />
-                <h2 className="font-[600] mt-2">{listing.title}</h2>
+                <Link href={`/listings/${listing.id}`} className="font-[600] mt-2 hover:underline">{listing.title}</Link>
                 <span className="mt-2 text-[14px]">
                   {truncateText(listing.description, 100)}
                 </span>

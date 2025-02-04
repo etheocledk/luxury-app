@@ -8,7 +8,7 @@ class ListingsController < ApplicationController
 
     listings_with_images = listings.map do |listing|
       listing.as_json.merge({
-        # default_image_url: listing.default_image&.file.attached? ? listing.default_image.image_url : nil,
+        default_image_url: listing.default_image,
         organization: listing.organization.as_json(only: [ :id, :title ]),
         place: listing.place.as_json(only: [ :id, :title, :description ])
         # images: listing.images.map { |image| image.file.attached? ? image.image_url : nil }
@@ -22,14 +22,15 @@ class ListingsController < ApplicationController
   # GET /listings/:id
   def show
     authorize @listing
-
+  
     render json: @listing.as_json.merge({
-      # default_image_url: @listing.default_image&.file.attached? ? @listing.default_image.image_url : nil,
-      organization: @listing.organization.as_json(only: [ :id, :title ]),
-      place: @listing.place.as_json(only: [ :id, :title ])
-      # images: @listing.images.order(sort: :asc).map { |image| image.file.attached? ? image.image_url : nil }
+      default_image_url: @listing.default_image, 
+      organization: @listing.organization.as_json(only: [:id, :title]),
+      place: @listing.place.as_json(only: [:id, :title]),
+      images: @listing.images.order(sort: :asc).map { |image| image.file.attached? ? image.image_url : nil }
     })
   end
+  
 
 
   # POST /listings

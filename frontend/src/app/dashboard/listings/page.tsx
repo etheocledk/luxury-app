@@ -8,6 +8,7 @@ import useHttpClient from "@/app/api/httpClient";
 import endpoints from "@/app/api/endpoints";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+import baseUrl from "../../api/baseUrl";
 
 export default function Listings() {
   const router = useRouter();
@@ -82,15 +83,14 @@ export default function Listings() {
                 <div className="flex space-x-2">
                   <div>
                     <Image
-                      src={
-                        listing.default_image_url ||
-                        "https://dummyimage.com/300x300"
-                      }
+                      src={listing.default_image_url ? baseUrl + listing.default_image_url : "https://dummyimage.com/300x300"}
                       alt={listing.title}
                       width={300}
                       height={300}
                       className="h-10 w-10 rounded-[5px] object-cover"
                     />
+
+                    
                   </div>
                   <div>
                     <h2 className="text-md font-semibold">{listing.title}</h2>

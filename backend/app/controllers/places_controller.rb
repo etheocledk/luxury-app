@@ -6,12 +6,11 @@ class PlacesController < ApplicationController
   def index
     places = policy_scope(Place)
 
-    # Inclure les images, geo_region et place_type associés pour chaque place
     places_with_images = places.map do |place|
       place.as_json.merge({
         images: place.images.map { |image| image.image_url },
-        geo_region: place.geo_region.as_json(only: [ :id, :title, :key ]),  # Remplace les attributs par ce que tu veux inclure
-        place_type: place.place_type.as_json(only: [ :id, :title, :key ])  # Idem ici, ajuste selon tes besoins
+        geo_region: place.geo_region.as_json(only: [ :id, :title, :key ]), 
+        place_type: place.place_type.as_json(only: [ :id, :title, :key ])  
       })
     end
 
@@ -22,7 +21,6 @@ class PlacesController < ApplicationController
   def show
     authorize @place
 
-    # Inclure les images, geo_region et place_type pour une place spécifique
     render json: @place.as_json.merge({
       images: @place.images.map { |image| image.image_url },
       geo_region: @place.geo_region.as_json(only: [ :id, :name ]),

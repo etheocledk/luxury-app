@@ -9,13 +9,13 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 export default function AddListing() {
-    const [image, setImage] = useState<string | null>(null);  // Utilisation d'une seule image
+    const [image, setImage] = useState<string | null>(null); 
 
     const handleImageChange = (e: any) => {
-        const file = e.target.files[0];  // Récupère la première image sélectionnée
+        const file = e.target.files[0]; 
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            setImage(imageUrl);  // Met à jour l'état avec l'URL de l'image
+            setImage(imageUrl);
         }
     };
 
@@ -55,11 +55,6 @@ export default function AddListing() {
                 formData.append("image[subject_type]", "Listing"); 
                 formData.append("image[organization_id]", data.organization_id);
                 await post(endpoints.images(), formData);
-                // if (response.error) {
-                //     // showToast("Erreur lors de l'upload de l'image", "error");
-                //     // return;
-                //     console.error("Error uploading image:", response.error);
-                // }
             }
 
             setIsSubmitting(false);

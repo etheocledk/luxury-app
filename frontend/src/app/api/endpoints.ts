@@ -12,6 +12,7 @@ const endpoints = {
     geo_regions: () => "/geo_regions",
     place_types: () => "/place_types",
     images: () => "/images",
+    search_listings: (query:any) => `/search?query=${query}`,
 }
 
 export default endpoints;
